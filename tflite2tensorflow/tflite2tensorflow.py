@@ -5969,12 +5969,10 @@ def main():
                             input_graph_def=graph.as_graph_def(),
                             output_node_names=[re.sub(':0*', '', name) for name in output_node_names]
                         )
-                    if input_node_names == 'serving_default_input_layer:0':
-                        inputs_tmp = {'input': graph.get_tensor_by_name(t) for t in input_node_names}
-                        output_tmp = {'output': graph.get_tensor_by_name(t) for t in output_node_names}
-                    else:
-                        inputs_tmp = {re.sub(':0*', '', t): graph.get_tensor_by_name(t) for t in input_node_names}
-                        output_tmp = {re.sub(':0*', '', t): graph.get_tensor_by_name(t) for t in output_node_names}
+
+                    inputs_tmp = {'input': graph.get_tensor_by_name(t) for t in input_node_names}
+                    output_tmp = {'output': graph.get_tensor_by_name(t) for t in output_node_names}
+      
                     tf.saved_model.simple_save(
                         sess,
                         model_output_path,
