@@ -5970,17 +5970,20 @@ def main():
                             output_node_names=[re.sub(':0*', '', name) for name in output_node_names]
                         )
                     try:
-                        inputs_tmp = {'input': graph.get_tensor_by_name("serving_default_input_layer:0")}
-                        output_tmp = {'output': graph.get_tensor_by_name("StatefulPartitionedCall:0")}
+                        tf.saved_model.simple_save(
+                            sess,
+                            model_output_path,
+                            inputs= {re.sub(':0*', '', t): graph.get_tensor_by_name(t) for t in input_node_names},
+                            outputs={re.sub(':0*', '', t): graph.get_tensor_by_name(t) for t in output_node_names}
+                        )
                     except:
-                        inputs_tmp= {re.sub(':0*', '', t): graph.get_tensor_by_name(t) for t in input_node_names},
-                        output_tmp={re.sub(':0*', '', t): graph.get_tensor_by_name(t) for t in output_node_names}
-                    tf.saved_model.simple_save(
-                        sess,
-                        model_output_path,
-                        inputs= inputs_tmp,
-                        outputs=output_tmp
-                    )
+                        tf.saved_model.simple_save(
+                            sess,
+                            model_output_path,
+                            inputs= {'input': graph.get_tensor_by_name("serving_default_input_layer:0")},
+                            outputs={'output': graph.get_tensor_by_name("StatefulPartitionedCall:0")}
+                        )
+                        
                 else:
                     graph_def = tf.graph_util.convert_variables_to_constants(
                         sess=sess,
